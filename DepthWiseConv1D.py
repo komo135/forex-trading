@@ -175,8 +175,6 @@ class DepthwiseConv1D(Conv1D):
                                         constraint=self.bias_constraint)
         else:
             self.bias = None
-        # Set input spec.
-        self.input_spec = InputSpec(ndim=4, axes={channel_axis: input_dim})
         self.built = True
 
     def call(self, inputs):
