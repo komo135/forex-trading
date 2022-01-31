@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import Conv1D, Layer, Concatenate, MultiHeadAttention, LayerNormalization, ELU, Add, Dense
 from tensorflow.keras import layers, Sequential
-from rl.network.DepthWiseConv1D import DepthwiseConv1D
+from DepthWiseConv1D import DepthwiseConv1D
 import os
 
 normal_model = keras.Model
