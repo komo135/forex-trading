@@ -74,7 +74,7 @@ def inputs_f(input_shape, dim, kernel_size, strides, pooling, padding="same"):
 
 
 def output(x, output_size):
-    x = tf.keras.layers.Dense(output_size, "softmax")(x)
+    x = tf.keras.layers.Dense(output_size)(x)
     return x
 
 
