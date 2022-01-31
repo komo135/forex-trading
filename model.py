@@ -1,4 +1,4 @@
-import network
+from network import Model
 
 efficientnet_b0 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 0, efficientv1=True)
 efficientnet_b1 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 1, efficientv1=True)
@@ -51,8 +51,8 @@ sam_convnext_b3 = lambda: Model([], 32, "DepthwiseConv1D", "resnet", 3, convnext
 sam_convnext_b4 = lambda: Model([], 32, "DepthwiseConv1D", "resnet", 4, convnext=True, sam=True)
 
 
-def build_model(model_name: str, input_shape: tuple, output_size: int) -> tf.keras.Model:
-    model = eval(model_name)()
+def build_model(model_name, input_shape: tuple, output_size: int) -> tf.keras.Model:
+    model = model_name()
     print(noise_ratio)
     model = model.build_model(input_shape, output_size, )
 
