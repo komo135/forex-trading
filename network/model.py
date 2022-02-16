@@ -1,4 +1,4 @@
-from network.nerwork import Model
+from network.network import Model
 
 # efficientnet
 efficientnet_b0 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 0, efficientv1=True)
