@@ -56,10 +56,7 @@ def gen_data(symbol="EURUSD"):
     y = np.array(df[["close", "high", "low"]])
     atr_ = np.array(df[["atr"]])
 
-    print("gen time series data")
-
     window_size = 30
-    # window_size = 240
     time_x = []
     time_y = []
     time_atr = []
