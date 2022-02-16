@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import sys
 try:
   import MetaTrader5 as mt5
 except:
