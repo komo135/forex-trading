@@ -428,7 +428,7 @@ class Agent:
 
                 pips, profits, _, _, _ = self.trade(s, self.train_step[-1]-10000, self.train_step[-1], train=True)
                 self.train_rewards.append(np.sum(pips))
-                pips, profits, _, _, _ = self.trade(s, self.test_step[0], self.test_step[0] + 960 * 9, train=True)
+                pips, profits, _, _, _ = self.trade(s, self.test_step[0], self.test_step[0], train=True)
                 self.test_rewards.append(np.sum(pips))
                 
                 self.max_profit /= self.account_size
