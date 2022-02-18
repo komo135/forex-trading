@@ -20,7 +20,7 @@ agent = dqn.Agent(model_name="efficientnet_b0", s=0, action_type=4, pip_scale=1,
 agent.run()
 ```
 ### argment
-```
+```python
 """
 ## s
   0 -> "EURUSD"
