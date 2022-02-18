@@ -78,9 +78,6 @@ class Agent:
 
     def env(self):
         self.x = np.load("rl/data/x.npy")
-        x_ = [2, 3, 4]
-        print(x_)
-        self.x = self.x[:, :, :, x_]
 
         for s in range(self.x.shape[0]):
             for i in range(self.x.shape[-1]):
