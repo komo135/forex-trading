@@ -77,7 +77,7 @@ class Agent:
             np.random.shuffle(self.ind)
 
     def env(self):
-        self.x = np.load("rl/data/x.npy")
+        self.x = np.load("data/x.npy")
 
         for s in range(self.x.shape[0]):
             for i in range(self.x.shape[-1]):
@@ -85,12 +85,12 @@ class Agent:
 
         self.x = np.clip(self.x, -1, 1)
 
-        y = np.load("rl/data/target.npy")
+        y = np.load("data/target.npy")
         self.low = y[:, :, 2].reshape((self.x.shape[0], -1))
         self.high = y[:, :, 1].reshape((self.x.shape[0], -1))
         self.y = y[:, :, 0].reshape((self.x.shape[0], -1))
 
-        self.atr = np.load("rl/data/atr.npy").reshape((self.x.shape[0], -1)).astype(np.int32)
+        self.atr = np.load("data/atr.npy").reshape((self.x.shape[0], -1)).astype(np.int32)
 
         self.train_step = np.arange(0, int(self.x.shape[1] * 0.9))
         self.test_step = np.arange(self.train_step[-1], int(self.x.shape[1]))
