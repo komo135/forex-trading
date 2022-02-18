@@ -29,13 +29,7 @@ def gen_data(symbol=symbol):
         s_ += 1
         while True:
             try:
-                # r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_M5, 0, 69120 * 10)
-                # r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_M10, 0, 34560 * 10)
-                # r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_M15, 0, 23040 * 10)
-                r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_M30, 0, 11520 * 10)
-                # r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_H1, 0, 5760 * 10)
-                # r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_H4, 0, 1440 * 10)
-                # r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_D1, 0, 240 * 10)
+                r = mt5.copy_rates_from_pos(s, mt5.TIMEFRAME_M15, 0, 23040 * 10)
                 df = pd.DataFrame(r)
                 df.close
                 break
