@@ -431,7 +431,20 @@ class Agent:
                 pips, profits, _, _, _ = self.trade(s, self.test_step[0], self.test_step[0], train=True)
                 self.test_rewards.append(np.sum(pips))
                 
+                acc = np.mean(pips > 0)
+                # len_pip = (len(pips[pips > 0]) - len(pips[pips < 0])) * np.clip(acc, 0, 0.75) * 10
+                len_pip = (len(pips[pips > 0]) * 2 - len(pips[pips < 0])) * np.clip(acc, 0, 0.75) * 2
+                # len_pip = (len(pips) + len(pips[pips > 0]) - len(pips[pips < 0])) * np.clip(acc, 0, 0.75) * 2
+                total_win = np.sum(pips[pips > 0])
+                total_lose = np.sum(pips[pips < 0])
+                ev = \
+                    (np.mean(pips[pips > 0]) * acc + np.mean(pips[pips < 0]) * (1 - acc)) / abs(np.mean(pips[pips < 0]))
+                np.clip(ev, 0, 0.75) / 0.75
+                rr = np.clip(total_win / abs(total_lose), 0, 2.5) / 2.5
+                acc /= 0.7
+
                 self.max_profit /= self.account_size
+                self.max_pip = (rr + ev + acc) * len_pip
 
                 self.test_pip.append(self.max_pip)
                 self.test_profit.append(self.max_profit)
