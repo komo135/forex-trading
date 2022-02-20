@@ -20,7 +20,7 @@ $ python
 ```python
 >>> from agent import dqn
 
->>> agent = dqn.Agent(model_name="efficientnet_b0", s=0, action_type=4, pip_scale=1, n=1, loss_cut=False, use_device="tpu", dueling=False)
+>>> agent = dqn.Agent(model_name="efficientnet_b0", s=5, action_type=3, pip_scale=1, n=1, loss_cut=False, use_device="tpu", dueling=False)
 >>> agent.run()
 >>>
 >>> self.plot_result(w=self.best_w, risk=0.04, s=self.s)
