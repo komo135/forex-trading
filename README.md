@@ -25,23 +25,4 @@ $ python
 >>>
 >>> self.plot_result(w=self.best_w, risk=0.04, s=self.s)
 ```
-### argment
-```python
-"""
-## s
-  0 -> "EURUSD"
-  1 -> "GBPUSD"
-  2 -> "NZDUSD"
-  3 -> "AUDUSD"
-  4 -> "EURGBP"
-  5 -> "GBPJPY"
-  6 -> "USDJPY"
-  7 -> "EURJPY"
-  8 -> "AUDJPY"
-  9 -> "NZDJPY"
-  10 -> "USDCHF"
-## Available is the model name
-  efficientnet_b0 ~ b7
-  
-"""
-```
+![image](https://github.com/nagikomo/forex-trading/blob/main/image/FireShot%20Capture%20002%20-%20forex-trading_dqn.ipynb%20at%20main%20%C2%B7%20nagikomo_forex-trading%20-%20github.com.png)
