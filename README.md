@@ -1,6 +1,7 @@
 # Example
 
 ### install package
+download Metatrader5 and create demo account
 ```console
 $ pip install ta
 $ pip install MetaTrader5
