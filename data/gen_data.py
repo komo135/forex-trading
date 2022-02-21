@@ -65,12 +65,12 @@ def gen_data(symbol=symbol):
         lists = ["sig"]
         x = df[lists]
         x = np.array(x)
+        x /= np.max(np.abs(x), axis=0, keepdims=True)
         
         y = np.array(df[["close", "high", "low"]])
         atr_ = np.array(df[["atr"]])
 
         window_size = 30
-        # window_size = 240
         time_x = []
         time_y = []
         time_atr = []
