@@ -79,12 +79,6 @@ class Agent:
     def env(self):
         self.x = np.load("data/x.npy")
 
-        for s in range(self.x.shape[0]):
-            for i in range(self.x.shape[-1]):
-                self.x[s, :, :, i] /= np.quantile(np.abs(self.x[s, :, :, i]), 0.99)
-
-        self.x = np.clip(self.x, -1, 1)
-
         y = np.load("data/target.npy")
         self.low = y[:, :, 2].reshape((self.x.shape[0], -1))
         self.high = y[:, :, 1].reshape((self.x.shape[0], -1))
@@ -428,13 +422,11 @@ class Agent:
 
                 pips, profits, _, _, _ = self.trade(s, self.train_step[-1]-10000, self.train_step[-1], train=True)
                 self.train_rewards.append(np.sum(pips))
-                pips, profits, _, _, _ = self.trade(s, self.test_step[0], self.test_step[0], train=True)
+                pips, profits, _, _, _ = self.trade(s, self.test_step[0], self.test_step[-1], train=True)
                 self.test_rewards.append(np.sum(pips))
                 
                 acc = np.mean(pips > 0)
-                # len_pip = (len(pips[pips > 0]) - len(pips[pips < 0])) * np.clip(acc, 0, 0.75) * 10
                 len_pip = (len(pips[pips > 0]) * 2 - len(pips[pips < 0])) * np.clip(acc, 0, 0.75) * 2
-                # len_pip = (len(pips) + len(pips[pips > 0]) - len(pips[pips < 0])) * np.clip(acc, 0, 0.75) * 2
                 total_win = np.sum(pips[pips > 0])
                 total_lose = np.sum(pips[pips < 0])
                 ev = \
