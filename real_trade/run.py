@@ -31,7 +31,7 @@ def run(model_name, s, action_type, timeframe="h1", lot_size=0.01):
     elif action_type == 2:
         actions[0] = 0
 
-    model = tf.keras.models.load_model(model_name)
+    model = tf.keras.models.load_model("saved_model/" + model_name)
 
     init = mt5.initialize()
     assert init
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     parser.add_argument("timeframe", type=str, help="m1 or m10 or m15 or m30 or h1 or h4 or d1")
     parser.add_argument("lot_size", type=float, help="0.01~")
     args = parser.parse_args()
-    
+
     run(args.model_name, args.s, args.action_type, args.timeframe, args.lot_size)
