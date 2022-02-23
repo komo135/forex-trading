@@ -902,7 +902,7 @@ create_network("sam_se_lambda_convnext", [], 48, "LambdaLayer", "resnet", convne
 
 
 def build_model(model_name: str, input_shape: tuple, output_size: int) -> keras.Model:
-    model = network_dict[model_name]
+    model = network_dict[model_name]()
     print(noise_ratio)
     model = model.build_model(input_shape, output_size, )
 
