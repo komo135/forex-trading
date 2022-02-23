@@ -1,15 +1,13 @@
-import tensorflow.keras as keras
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.layers import Conv1D, Layer, Concatenate, MultiHeadAttention, LayerNormalization, ELU, Add, Dense
+import tensorflow.keras as keras
 from tensorflow.keras import layers, Sequential
-from network.DepthWiseConv1D import DepthwiseConv1D
-import os
-normal_model = keras.Model
+from tensorflow.keras.layers import Conv1D, Layer, Concatenate, LayerNormalization, Dense
+
+from rl.network.DepthWiseConv1D import DepthwiseConv1D
 
 norm = tf.keras.regularizers.l1_l2(l1=0, l2=0)
-noise_ratio = (0.1, 0.2, 0.2, 0.1)
-# noise = layers.Dropout
+noise_ratio = (0., 0., 0., 0)
 noise = layers.GaussianDropout
 
 gamma = [1, 1.2, 1.4, 1.7, 2., 2.4, 2.9, 3.5]
@@ -17,14 +15,14 @@ alpha = [1, 1.1, 1.21, 1.33, 1.46, 1.61, 1.77, 1.94]
 
 l_b0 = (3, 4, 6, 3)
 
-noise_b0 = [0.1, 0.0, 0.1, 0.1]
-noise_b1 = [0.1, 0.0, 0.14, 0.1]
-noise_b2 = [0.1, 0.0, 0.18, 0.1]
-noise_b3 = [0.1, 0.0, 0.22, 0.1]
-noise_b4 = [0.1, 0.0, 0.26, 0.1]
-noise_b5 = [0.1, 0.0, 0.3, 0.1]
-noise_b6 = [0.1, 0.0, 0.34, 0.1]
-noise_b7 = [0.1, 0.0, 0.38, 0.1]
+noise_b0 = [0.1, 0.1, 0.1, 0.1]
+noise_b1 = [0.1, 0.14, 0.14, 0.1]
+noise_b2 = [0.1, 0.18, 0.18, 0.1]
+noise_b3 = [0.1, 0.22, 0.22, 0.1]
+noise_b4 = [0.1, 0.26, 0.26, 0.1]
+noise_b5 = [0.1, 0.3, 0.3, 0.1]
+noise_b6 = [0.1, 0.34, 0.34, 0.1]
+noise_b7 = [0.1, 0.38, 0.38, 0.1]
 
 noise_l = [noise_b0, noise_b1, noise_b2, noise_b3, noise_b4, noise_b5, noise_b6, noise_b7]
 
@@ -466,6 +464,7 @@ class MBBlock(layers.Layer):
 
         self.l1 = keras.Sequential([
             Activation(),
+            noise(noise_ratio[1]),
             Conv1D(int(idim * expand_ratio), 1, 1, "same", use_bias=False, kernel_initializer="he_normal"),
             Activation(),
         ])
@@ -473,57 +472,7 @@ class MBBlock(layers.Layer):
         self.l3 = keras.Sequential([
             Activation(),
             SE(int(idim * expand_ratio), .25),
-            Conv1D(odim, 1, 1, "same", use_bias=False, kernel_initializer="he_normal"),
             noise(noise_ratio[2]),
-        ])
-
-    def call(self, inputs, *args, **kwargs):
-        x = self.l1(inputs)
-        x = self.l2(x)
-        x = self.l3(x)
-
-        if self.types == "resnet":
-            return x + inputs
-        elif self.types == "densenet":
-            return tf.concat([inputs, x], axis=-1)
-
-    def get_config(self):
-        config = {
-            "idim": self.idim,
-            "odim": self.odim,
-            "expand_ratio": self.expand_ratio,
-            "se_ratio": self.se_ratio,
-            "kernel_size": self.kernel_size,
-            "layer_name": self.layer_name,
-            "types": self.types
-        }
-        return config
-
-
-class MBxBlock(layers.Layer):
-    def __init__(self, idim, odim, expand_ratio, kernel_size, se_ratio=0.25, layer_name="DepthwiseConv1D",
-                 types="resnet"):
-        super(MBxBlock, self).__init__()
-        self.idim = idim
-        self.odim = odim
-        self.expand_ratio = expand_ratio
-        self.se_ratio = se_ratio
-        self.kernel_size = kernel_size
-        self.layer_name = layer_name
-        self.types = types.lower()
-        assert self.types == "resnet" or self.types == "densenet"
-
-        self.l1 = keras.Sequential([
-            # noise(noise_ratio[1] / 2),
-            Conv1D(int(idim * expand_ratio), 1, 1, "same", use_bias=False, kernel_initializer="he_normal"),
-            layers.LayerNormalization(),
-             # noise(noise_ratio[2] / 2),
-        ])
-        self.l2 = layer(layer_name, int(idim * expand_ratio), False, kernel_size, 1)
-        self.l3 = keras.Sequential([
-            Mish(),
-            SE(int(idim * expand_ratio), .25),
-            # noise(noise_ratio[1] / 2),
             Conv1D(odim, 1, 1, "same", use_bias=False, kernel_initializer="he_normal"),
         ])
 
@@ -561,14 +510,15 @@ class FuseBlock(Layer):
 
         self.l1 = keras.Sequential([
             Activation("mish"),
+            noise(noise_ratio[1]),
             Conv1D(int(idim * expand_ratio), kernel_size, 1, "same", kernel_initializer="he_normal", use_bias=False)
         ])
         if self.se_ratio != 0:
             self.se = SE(int(idim * expand_ratio), se_ratio)
         self.l2 = keras.Sequential([
             Activation("mish"),
-            Conv1D(odim, 1, 1, "same", kernel_initializer="he_normal", use_bias=False),
             noise(noise_ratio[2]),
+            Conv1D(odim, 1, 1, "same", kernel_initializer="he_normal", use_bias=False),
         ])
 
     def call(self, inputs, *args, **kwargs):
@@ -612,22 +562,24 @@ class ConvBlock(layers.Layer):
         if self.types == "resnet":
             self.l = [
                 Activation(),
+                noise(noise_ratio[1]),
                 layer(layer_name, dim, bias, 7, groups),
                 Activation(),
                 layer("conv1d", dim * 4, True, 1, 1),
                 Activation(),
                 "attention",
-                layer("conv1d", dim, True, 1, 1),
                 noise(noise_ratio[2]),
+                layer("conv1d", dim, True, 1, 1),
             ]
         else:
             self.l = [
                 Activation(),
+                noise(noise_ratio[1]),
                 layer("conv1d", dim * 4, True, 1, 1),
                 Activation(),
                 "attention",
-                layer(layer_name, dim, bias, 7, groups),
                 noise(noise_ratio[2]),
+                layer(layer_name, dim, bias, 7, groups),
             ]
 
         if self.se:
@@ -675,13 +627,14 @@ class ConvnextBlock(layers.Layer):
         self.cbam = cbam
 
         self.l = [
+            noise(noise_ratio[1]),
             layer(layer_name, dim, True, 7),
             layers.LayerNormalization(),
             layers.Conv1D(dim * 4, 1, 1, "same", kernel_initializer="he_normal"),
             layers.Activation("gelu"),
             "attention",
-            layers.Conv1D(dim, 1, 1, "same", kernel_initializer="he_normal"),
             noise(noise_ratio[2]),
+            layers.Conv1D(dim, 1, 1, "same", kernel_initializer="he_normal"),
         ]
         if self.se:
             self.se_layer = SE(dim * 4)
@@ -698,7 +651,6 @@ class ConvnextBlock(layers.Layer):
                     x = self.cbam_layer(x)
             else:
                 x = l(x)
-
 
         if self.types == "resnet":
             return inputs + x
@@ -718,6 +670,7 @@ class ConvnextBlock(layers.Layer):
 
 class SAMModel(keras.Model):
     rho = 0.05
+
     def train_step(self, data):
         x, y = data
         e_ws = []
@@ -780,8 +733,8 @@ class SAMModel(keras.Model):
 
 class Model:
     def __init__(self, num_layer, dim: int, layer_name: str, types: str, scale=0,
-                 groups=1, sam=False, se=False, cbam=False , vit=False,
-                 efficientv1=False, efficientv2=False, efficientv3=False,
+                 groups=1, sam=False, se=False, cbam=False, vit=False,
+                 efficientv1=False, efficientv2=False,
                  convnext=False):
         global noise_ratio
         self.num_layer = num_layer
@@ -793,7 +746,6 @@ class Model:
         self.cbam = bool(cbam)
         self.efficientv1 = bool(efficientv1)
         self.efficientv2 = bool(efficientv2)
-        self.efficientv3 = bool(efficientv3)
         self.vit = vit
         self.convnext = convnext
 
@@ -804,7 +756,7 @@ class Model:
         self.num_layer = num_layer if num_layer else np.round(np.array(l_b0) * self.alpha).astype(int)
         noise_ratio = noise_l[scale]
 
-        if efficientv1 or efficientv2 or efficientv3:
+        if efficientv1 or efficientv2:
             self.dim = int((16 if self.types == "resnet" else 32) * self.gamma)
         if self.dim and self.layer_name == "lambdalayer":
             self.dim = 4 * int(np.round(self.dim / 4))
@@ -816,8 +768,6 @@ class Model:
         elif self.efficientv2:
             block = [FuseBlock, FuseBlock, FuseBlock]
             block.extend([MBBlock for _ in range(len(l) - 3)])
-        elif self.efficientv3:
-            block = [MBxBlock for _ in range(len(l))]
 
         self.block = block
 
@@ -827,7 +777,7 @@ class Model:
         elif self.types == "resnet":
             dim = self.dim = self.dim * 2 if dim is None else dim
 
-        if self.convnext or self.efficientv3:
+        if self.convnext:
             x = layers.LayerNormalization()(x)
             x = layers.Conv1D(dim, 2, 1, "same", kernel_initializer="he_normal")(x)
             if pool:
@@ -892,7 +842,7 @@ class Model:
     def build_model(self, input_shape, output_size):
         inputs, x = inputs_f(input_shape, self.dim, 5, 1, False, "same")
 
-        if self.efficientv1 or self.efficientv2 or self.efficientv3:
+        if self.efficientv1 or self.efficientv2:
             x = self.efficient_model(x)
         else:
             x = self.conv_model(x)
@@ -901,7 +851,7 @@ class Model:
         # x = layers.LayerNormalization()(x)
         x = Output(output_size)(x)
 
-        return SAMModel(inputs, x) if self.sam else normal_model(inputs, x)
+        return SAMModel(inputs, x) if self.sam else tf.keras.Model(inputs, x)
 
 
 # efficientnet
@@ -943,9 +893,6 @@ efficientnetv2_b7 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 7, efficie
 sam_efficientnetv2_b2 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 2, efficientv2=True, sam=True)
 sam_efficientnetv2_b4 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 4, efficientv2=True, sam=True)
 sam_efficientnetv2_b7 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 7, efficientv2=True, sam=True)
-
-#efficientv3
-efficientnetv3_b0 = lambda: Model([], 0, "DepthwiseConv1D", "resnet", 0, efficientv3=True)
 
 # resnet
 se_lambda_resnet_b0 = lambda: Model([], 48, "LambdaLayer", "resnet", 0, se=True)
