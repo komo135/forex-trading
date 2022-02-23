@@ -61,7 +61,7 @@ def gen_data(symbol=symbol):
         lists = ["sig"]
         x = df[lists]
         x = np.array(x)
-        x = np.clip(x / np.quantile(np.abs(x), 0.95, 0, keepdims=True), -1, 1)
+        x = np.clip(x / np.quantile(np.abs(x), 0.975, 0, keepdims=True), -1, 1)
         
         y = np.array(df[["close", "high", "low"]])
         atr_ = np.array(df[["atr"]])
