@@ -139,8 +139,9 @@ class Agent:
             buy = np.array([trend[i + n] - trend[i] for i in range(len(trend) - n)]).reshape((-1,))
             scale = np.quantile(abs(buy), 0.99) / 1
             buy = np.clip(buy / scale, -1, 1)
-            spread = int((np.quantile(self.atr[s], 0.25)) / scale)
+            spread = np.quantile(self.atr[s], 0.25) / scale
             spread = np.clip(spread, 0.02, None) * self.pip_scale
+            spread = np.round(spread, 2)
 
             buy *= self.pip_scale
             sell = -buy
