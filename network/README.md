@@ -9,7 +9,7 @@ model = build_model("convnext_b4", (30, 1), 2)
 model = build_model("sam_se_convnext_b3, (30, 1), 2)
 ```
 # Available networks
-| normal | sam | se | sam_se |
+| model | sam | se | sam_se |
 |:---:|:---:|:---:|:---:|
 |efficientnet |Yes |No |No |
 |lambda_efficientnet |Yes |No |No |
