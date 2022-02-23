@@ -1,9 +1,6 @@
 import MetaTrader5 as mt5
 import numpy as np
 import pandas as pd
-import ta
-from ta.momentum import stoch
-from ta.trend import _ema as ema
 
 symbol = [
     "EURUSD", "GBPUSD", "NZDUSD", "AUDUSD", "EURGBP", "GBPJPY", "USDJPY", "EURJPY", "AUDJPY", "NZDJPY", "USDCHF"
@@ -13,7 +10,6 @@ symbol = [
 install Metatrader5 and create demo account(example XMTrading)
 
 pip install MetaTrader5
-pip install ta
 """
 
 def gen_data(symbol=symbol):
@@ -65,7 +61,7 @@ def gen_data(symbol=symbol):
         lists = ["sig"]
         x = df[lists]
         x = np.array(x)
-        x /= np.max(np.abs(x), axis=0, keepdims=True)
+        x = np.clip(x / np.quantile(np.abs(x), 0.95, 0, keepdims=True), -1, 1)
         
         y = np.array(df[["close", "high", "low"]])
         atr_ = np.array(df[["atr"]])
