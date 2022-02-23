@@ -15,14 +15,23 @@ alpha = [1, 1.1, 1.21, 1.33, 1.46, 1.61, 1.77, 1.94]
 
 l_b0 = (3, 4, 6, 3)
 
-noise_b0 = [0.1, 0.1, 0.1, 0.1]
-noise_b1 = [0.1, 0.14, 0.14, 0.1]
-noise_b2 = [0.1, 0.18, 0.18, 0.1]
-noise_b3 = [0.1, 0.22, 0.22, 0.1]
-noise_b4 = [0.1, 0.26, 0.26, 0.1]
-noise_b5 = [0.1, 0.3, 0.3, 0.1]
-noise_b6 = [0.1, 0.34, 0.34, 0.1]
-noise_b7 = [0.1, 0.38, 0.38, 0.1]
+noise_b0 = [0.1, 0.05, 0.1, 0.1]
+noise_b1 = [0.1, 0.07, 0.14, 0.1]
+noise_b2 = [0.1, 0.09, 0.18, 0.1]
+noise_b3 = [0.1, 0.11, 0.22, 0.1]
+noise_b4 = [0.1, 0.13, 0.26, 0.1]
+noise_b5 = [0.1, 0.15, 0.3, 0.1]
+noise_b6 = [0.1, 0.17, 0.34, 0.1]
+noise_b7 = [0.1, 0.19, 0.38, 0.1]
+
+# noise_b0 = [0.1, 0.1, 0.1, 0.1]
+# noise_b1 = [0.1, 0.14, 0.14, 0.1]
+# noise_b2 = [0.1, 0.18, 0.18, 0.1]
+# noise_b3 = [0.1, 0.22, 0.22, 0.1]
+# noise_b4 = [0.1, 0.26, 0.26, 0.1]
+# noise_b5 = [0.1, 0.3, 0.3, 0.1]
+# noise_b6 = [0.1, 0.34, 0.34, 0.1]
+# noise_b7 = [0.1, 0.38, 0.38, 0.1]
 
 noise_l = [noise_b0, noise_b1, noise_b2, noise_b3, noise_b4, noise_b5, noise_b6, noise_b7]
 
@@ -859,8 +868,7 @@ network_dict = {}
 
 def create_network(name, num_layer, dim, layer_name, types, **kwargs):
     for i in range(8):
-        network_dict.update(
-            {f"{name}_b{i}": lambda: Model(num_layer, dim, layer_name, types, i, **kwargs)})
+        network_dict.update({f"{name}_b{i}": lambda i=i: Model(num_layer, dim, layer_name, types, i, **kwargs)})
 
 
 create_network("efficientnet", [], 0, "DepthwiseConv1D", "resnet", efficientv1=True)
