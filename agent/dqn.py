@@ -406,7 +406,6 @@ class Agent:
         else:
             target_q = np.zeros((len(returns), self.action_size, self.action_size), np.float32)
 
-        sp = 10000# split
         for _ in range(epoch):
             returns = self.returns[s][ind].copy()
             noise = np.random.randn(*states.shape) * 0.1
@@ -414,30 +413,31 @@ class Agent:
             target_a = self.model.predict(new_states + noise, 102800)
             returns = self.target_q(returns, target_q, target_a)
 
-            self.model.fit(states[-sp:] + noise[-sp:], returns[-sp:], batch_size, 1,)
-            h = self.model.fit(states[:-sp] + noise[:-sp], returns[:-sp], batch_size, 1, validation_split=0.2, verbose=0)
+            h = self.model.fit(states + noise, returns, batch_size, validation_split=0.2)
             self.train_loss.extend(h.history["loss"])
             self.val_loss.extend(h.history["val_loss"])
 
             if len(self.train_loss) >= 200:
 
-                pips, profits, _, _, _ = self.trade(s, self.train_step[-1]-10000, self.train_step[-1], train=True)
+                pips, profits, _, _, _ = self.trade(s, self.test_step[0] - 11513, self.test_step[0], train=True)
                 self.train_rewards.append(np.sum(pips))
-                pips, profits, _, _, _ = self.trade(s, self.test_step[0], self.test_step[-1], train=True)
+                pips, profits, _, _, _ = self.trade(s, self.test_step[0], self.test_step[0] + 960 * 8, train=True)
                 self.test_rewards.append(np.sum(pips))
-                
+
                 acc = np.mean(pips > 0)
-                len_pip = (len(pips[pips > 0]) * 2 - len(pips[pips < 0])) * np.clip(acc, 0, 0.75) * 2
+                len_pip = len(pips[pips > 0]) * np.clip(acc, 0, 0.75) * 2
+
                 total_win = np.sum(pips[pips > 0])
                 total_lose = np.sum(pips[pips < 0])
                 ev = \
                     (np.mean(pips[pips > 0]) * acc + np.mean(pips[pips < 0]) * (1 - acc)) / abs(np.mean(pips[pips < 0]))
-                np.clip(ev, 0, 0.75) / 0.75
+                ev = np.clip(ev, 0, 0.75) / 0.75
                 rr = np.clip(total_win / abs(total_lose), 0, 2.5) / 2.5
                 acc /= 0.7
 
                 self.max_profit /= self.account_size
                 self.max_pip = (rr + ev + acc) * len_pip
+                self.max_pip = 0 if np.isnan(self.max_pip) else self.max_pip
 
                 self.test_pip.append(self.max_pip)
                 self.test_profit.append(self.max_profit)
