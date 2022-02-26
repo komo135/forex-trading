@@ -4,7 +4,7 @@ import tensorflow.keras as keras
 from tensorflow.keras import layers, Sequential
 from tensorflow.keras.layers import Conv1D, Layer, Concatenate, LayerNormalization, Dense
 
-from rl.network.DepthWiseConv1D import DepthwiseConv1D
+from network.DepthWiseConv1D import DepthwiseConv1D
 
 norm = tf.keras.regularizers.l1_l2(l1=0, l2=0)
 noise_ratio = (0., 0., 0., 0)
