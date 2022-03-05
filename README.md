@@ -12,9 +12,9 @@ https://user-images.githubusercontent.com/66017773/155930300-f6e2c949-72e7-4448-
 https://user-images.githubusercontent.com/66017773/155931351-b478b6d6-36cc-4ce1-8ee3-7c97e792d4ab.mp4
 
 
-6. install Metatrader5 package
+6. install Metatrader5 and ta package
 ```console
-$ pip install MetaTrader5
+$ pip install MetaTrader5 ta
 ```
 7. run generate_data.py
 ```console
