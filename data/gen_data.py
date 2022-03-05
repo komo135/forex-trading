@@ -1,6 +1,7 @@
 import MetaTrader5 as mt5
 import numpy as np
 import pandas as pd
+import ta
 
 symbol = [
     "EURUSD", "GBPUSD", "NZDUSD", "AUDUSD", "EURGBP", "GBPJPY", "USDJPY", "EURJPY", "AUDJPY", "NZDJPY", "USDCHF"
@@ -56,6 +57,7 @@ def gen_data(symbol=symbol):
             pass
 
         df["sig"] = df["close"] - df["close"].shift(1)
+        df["atr"] = ta.volatility.average_true_range(df.high, df.low, df.close)
         df = df.dropna()
 
         lists = ["sig"]
