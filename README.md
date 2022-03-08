@@ -1,3 +1,6 @@
+# Archived.
+The new repository will be https://github.com/komo135/trade-rl.
+
 # Download Forex data
 1. Download Metatrader5 from this [link](https://www.metatrader5.com/en/download) and install.
 2. Verify that a demo account exists.
